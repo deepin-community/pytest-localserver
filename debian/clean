@@ -1,0 +1,2 @@
+.cache/
+pytest_localserver.egg-info/

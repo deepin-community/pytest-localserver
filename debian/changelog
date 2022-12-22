@@ -1,0 +1,91 @@
+pytest-localserver (0.5.0-2) unstable; urgency=medium
+
+  * QA upload.
+  * Drop python2 package. Closes: #937562
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Thu, 12 Dec 2019 03:26:45 +0000
+
+pytest-localserver (0.5.0-1) unstable; urgency=medium
+
+  [ Emanuele Rocca ]
+  * QA upload
+  * New upstream release 0.5.0
+  * Provide new server.pem meeting OpenSSL SECLEVEL 2 requirements
+    (Closes: #911836)
+  * Bump Standards-Version
+
+  [ Ondřej Nový ]
+  * d/control: Remove ancient X-Python-Version field
+  * d/control: Remove ancient X-Python3-Version field
+
+ -- Emanuele Rocca <ema@debian.org>  Mon, 25 Feb 2019 20:40:05 +0100
+
+pytest-localserver (0.3.7-2) unstable; urgency=medium
+
+  * Orphan package:
+    + put Debian in QA in Maintainer field, drop Uploaders.
+
+  [ Ondřej Nový ]
+  * d/control: Set Vcs-* to salsa.debian.org
+  * d/copyright: Use https protocol in Format field
+  * d/watch: Use https protocol
+
+ -- Daniel Stender <stender@debian.org>  Mon, 19 Feb 2018 16:59:50 +0100
+
+pytest-localserver (0.3.7-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #867518).
+  * drop git-dpm regime (remove deb/.git-dpm, add deb/gbp.conf).
+  * deb/copyright:
+    + add pytest_localserver.egg-info to Files-Excluded.
+  * deb/clean:
+    + let deb/clean handle egg-info folder (drop deb/source/options).
+
+ -- Daniel Stender <stender@debian.org>  Tue, 18 Jul 2017 18:18:04 +0200
+
+pytest-localserver (0.3.6-1) unstable; urgency=medium
+
+  * New upstream release.
+  * deb/control: bump standards to 3.9.8 (no changes needed).
+  * deb/rules: don't purge .cache/ in dh_auto_test override, use deb/clean
+    instead.
+  * remove deb/gbp.conf (not needed anymore).
+
+ -- Daniel Stender <stender@debian.org>  Sun, 28 Aug 2016 13:37:29 +0200
+
+pytest-localserver (0.3.5-1) unstable; urgency=medium
+
+  * New upstream release:
+    + dropped py35-fix.patch (applied upstream).
+  * deb/control:
+    + put group into Maintainer field (unconfirmed group uploads).
+    + updated uploader email address.
+    + bumped standards to 3.9.7 (no changes needed).
+    + use HTTPS also for Vcs-Git.
+    + removed Testsuite field (deprecated).
+  * deb/copyright:
+    + set Files-Excluded for cruft.
+    + updated.
+  * deb/rules: added removal of .cache to PYBUILD tests args.
+  * deb/test/python{,3}-pytest-localserver:
+    + put set -e into script body.
+    + use shell loop instead of pipes with xargs and env.
+
+ -- Daniel Stender <stender@debian.org>  Fri, 18 Mar 2016 18:43:30 +0100
+
+pytest-localserver (0.3.4-2) unstable; urgency=medium
+
+  * deb/control:
+    + updated Homepage.
+    + use https for Vcs-Browser.
+  * deb/tests/: corrected names of scripts.
+  * Added py35-fix.patch (Closes: #801302).
+  * Added deb/.git-dpm.
+
+ -- Daniel Stender <debian@danielstender.com>  Sun, 25 Oct 2015 18:52:36 +0100
+
+pytest-localserver (0.3.4-1) unstable; urgency=medium
+
+  * Initial release (Closes: #792784)
+
+ -- Daniel Stender <debian@danielstender.com>  Wed, 29 Jul 2015 19:48:59 +0200
