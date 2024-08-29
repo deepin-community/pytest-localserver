@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf8 -*-
-#
 # Copyright (C) 2011 Sebastian Rahlf <basti at redtoad dot de>
 #
 # This program is release under the MIT license. You can find the full text of
@@ -49,6 +46,7 @@ def httpserver(request):
 
     """
     from pytest_localserver import http
+
     server = http.ContentServer()
     server.start()
     request.addfinalizer(server.stop)
@@ -62,6 +60,7 @@ def httpsserver(request):
     SSL encryption.
     """
     from pytest_localserver import https
+
     server = https.SecureContentServer()
     server.start()
     request.addfinalizer(server.stop)
@@ -77,6 +76,7 @@ def smtpserver(request):
     * ``addr`` - server address as tuple (host as str, port as int)
     """
     from pytest_localserver import smtp
+
     server = smtp.Server()
     server.start()
     request.addfinalizer(server.stop)

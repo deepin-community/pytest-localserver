@@ -2,17 +2,15 @@
 #
 # This program is release under the MIT license. You can find the full text of
 # the license in the LICENSE file.
-
 import os.path
 
 from pytest_localserver.http import ContentServer
 
 #: default server certificate
-DEFAULT_CERTIFICATE = os.path.join(
-    os.path.abspath(os.path.dirname(__file__)), 'server.pem')
+DEFAULT_CERTIFICATE = os.path.join(os.path.abspath(os.path.dirname(__file__)), "server.pem")
 
 
-class SecureContentServer (ContentServer):
+class SecureContentServer(ContentServer):
 
     """
     Small test server which works just like :class:`http.Server` over HTTP::
@@ -33,10 +31,19 @@ class SecureContentServer (ContentServer):
 
     If you want to create your own server certificate, you need `OpenSSL`_
     installed on your machine. A self-signed certificate consists of a
-    certificate and a private key for your server. It can be created with the
-    following command::
+    certificate and a private key for your server. It can be created with
+    a command like this, using OpenSSL 1.1.1::
 
-        openssl req -new -x509 -keyout server.pem -out server.pem -nodes
+        openssl req \
+            -x509 \
+            -newkey rsa:4096 \
+            -sha256 \
+            -days 3650 \
+            -nodes \
+            -keyout server.pem \
+            -out server.pem \
+            -subj "/CN=127.0.0.1/O=pytest-localserver/OU=Testing Dept." \
+            -addext "subjectAltName=DNS:localhost"
 
     Note that both key and certificate are in a single file now named
     ``server.pem``.
@@ -47,28 +54,39 @@ class SecureContentServer (ContentServer):
     Generate a server key and request for signing (csr). Make sure that the
     common name (CN) is your IP address/domain name (e.g. ``localhost``). ::
 
-        openssl genrsa -des3 -out server.key 4096
-        openssl req -new -key server.key -out server.csr
+        openssl genpkey \
+            -algorithm RSA \
+            -pkeyopt rsa_keygen_bits:4096 \
+            -out server.key
+        openssl req \
+            -new \
+            -addext "subjectAltName=DNS:localhost" \
+            -key server.key \
+            -out server.csr
 
     Generate your own CA. Make sure that this time the CN is *not* your IP
     address/domain name (e.g. ``localhost CA``). ::
 
-        openssl genrsa -des3 -out ca.key 4096
-        openssl req -new -x509 -key ca.key -out ca.crt
+        openssl genpkey \
+            -algorithm RSA \
+            -pkeyopt rsa_keygen_bits:4096 \
+            -aes256 \
+            -out ca.key
+        openssl req \
+            -new \
+            -x509 \
+            -key ca.key \
+            -out ca.crt
 
     Sign the certificate signing request (csr) with the self-created CA that
-    you made earlier. If you issue subsequent certificates and your browser
-    already knows about previous ones simply increment the serial number. ::
+    you made earlier. Note that OpenSSL does not copy the subjectAltName field
+    from the request (csr), so you have to provide it again as a file. If you
+    issue subsequent certificates and your browser already knows about previous
+    ones simply increment the serial number. ::
 
+        echo "subjectAltName=DNS:localhost" >server-extensions.txt
         openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key \
-            -set_serial 01 -out server.crt
-
-    Make a server.key which doesn't cause HTTPSServer to prompt for a
-    password::
-
-        openssl rsa -in server.key -out server.key.insecure
-        mv server.key server.key.secure
-        mv server.key.insecure server.key
+            -set_serial 01 -extfile server-extensions.txt -out server.crt
 
     Create a single file for both key and certificate::
 
@@ -89,39 +107,37 @@ class SecureContentServer (ContentServer):
 
     A more advanced tutorial can be found `here`_.
 
-    .. _pytest-localserver CA: https://bitbucket.org/pytest-dev/pytest-localserver/src/tip/pytest_localserver/ca.crt
+    .. _pytest-localserver CA: https://raw.githubusercontent.com/pytest-dev/pytest-localserver/master/pytest_localserver/ca.crt  # noqa: E501
     .. _pyOpenSSH: https://launchpad.net/pyopenssl
     """
 
-    def __init__(self, host='localhost', port=0,
-                 key=DEFAULT_CERTIFICATE, cert=DEFAULT_CERTIFICATE):
+    def __init__(self, host="localhost", port=0, key=DEFAULT_CERTIFICATE, cert=DEFAULT_CERTIFICATE):
         """
         :param key: location of file containing the server private key.
         :param cert: location of file containing server certificate.
         """
 
-        super(SecureContentServer, self).__init__(host, port, ssl_context=(key, cert))
+        super().__init__(host, port, ssl_context=(key, cert))
 
 
-if __name__ == '__main__':  # pragma: no cover
+if __name__ == "__main__":  # pragma: no cover
 
     import sys
     import time
 
-    print('Using certificate %s.' % DEFAULT_CERTIFICATE)
+    print("Using certificate %s." % DEFAULT_CERTIFICATE)
 
     server = SecureContentServer()
     server.start()
     server.logging = True
 
-    print('HTTPS server is running at %s' % server.url)
-    print('Type <Ctrl-C> to stop')
+    print("HTTPS server is running at %s" % server.url)
+    print("Type <Ctrl-C> to stop")
 
     try:
         path = sys.argv[1]
     except IndexError:
-        path = os.path.join(
-            os.path.dirname(os.path.abspath(__file__)), '..', 'README')
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "README.rst")
 
     server.serve_content(open(path).read(), 302)
 
@@ -129,5 +145,5 @@ if __name__ == '__main__':  # pragma: no cover
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
-        print('\rstopping...')
+        print("\rstopping...")
     server.stop()
