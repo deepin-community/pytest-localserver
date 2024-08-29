@@ -1,2 +1,2 @@
 Tests: python3-pytest-localserver
-Depends: python3-all, python3-werkzeug, python3-pytest, python3-six, python3-requests
+Depends: python3-all, python3-werkzeug, python3-pytest, python3-requests

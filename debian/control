@@ -3,18 +3,17 @@ Section: python
 Priority: optional
 Maintainer: Debian QA Group <packages@qa.debian.org>
 Build-Depends:
- debhelper (>= 9),
+ debhelper-compat (= 13),
  dh-python,
  python3-all,
  python3-pytest,
  python3-requests,
  python3-setuptools,
- python3-six,
  python3-werkzeug (>= 0.10)
-Standards-Version: 4.3.0
-Homepage: https://bitbucket.org/pytest-dev/pytest-localserver/
-Vcs-Git: https://salsa.debian.org/python-team/modules/pytest-localserver.git
-Vcs-Browser: https://salsa.debian.org/python-team/modules/pytest-localserver
+Standards-Version: 4.6.2
+Homepage: https://github.com/pytest-dev/pytest-localserver
+Vcs-Git: https://salsa.debian.org/python-team/packages/pytest-localserver.git
+Vcs-Browser: https://salsa.debian.org/python-team/packages/pytest-localserver
 
 Package: python3-pytest-localserver
 Architecture: all

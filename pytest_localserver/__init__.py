@@ -1,1 +1,1 @@
-VERSION = '0.5.0'
+from pytest_localserver._version import version as VERSION  # noqa

@@ -1,3 +1,18 @@
+.. image:: https://img.shields.io/pypi/v/pytest-localserver.svg?style=flat
+    :alt: PyPI Version
+    :target: https://pypi.python.org/pypi/pytest-localserver
+
+.. image:: https://img.shields.io/pypi/pyversions/pytest-localserver.svg
+    :alt: Supported Python versions
+    :target: https://pypi.python.org/pypi/pytest-localserver
+
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+
+.. image:: https://results.pre-commit.ci/badge/github/pytest-dev/pytest-localserver/master.svg
+   :target: https://results.pre-commit.ci/latest/github/pytest-dev/pytest-localserver/master
+   :alt: pre-commit.ci status
+
 ==================
 pytest-localserver
 ==================
@@ -73,14 +88,25 @@ poking around in the code itself.
     following attributes:
 
     * ``code`` - HTTP response code (int)
-    * ``content`` - content of next response (str)
+    * ``content`` - content of next response (str, bytes, or iterable of either)
     * ``headers`` - response headers (dict)
+    * ``chunked`` - whether to chunk-encode the response (enumeration)
 
-    Once these attribute are set, all subsequent requests will be answered with
-    these values until they are changed or the server is stopped. A more 
+    Once these attributes are set, all subsequent requests will be answered with
+    these values until they are changed or the server is stopped. A more
     convenient way to change these is ::
 
-        httpserver.serve_content(content=None, code=200, headers=None) 
+        httpserver.serve_content(content=None, code=200, headers=None, chunked=pytest_localserver.http.Chunked.NO)
+
+    The ``chunked`` attribute or parameter can be set to
+
+    * ``Chunked.YES``, telling the server to always apply chunk encoding
+    * ``Chunked.NO``, telling the server to never apply chunk encoding
+    * ``Chunked.AUTO``, telling the server to apply chunk encoding only if
+      the ``Transfer-Encoding`` header includes ``chunked``
+
+    If chunk encoding is applied, each str or bytes in ``content`` becomes one
+    chunk in the response.
 
     The server address can be found in property
 
@@ -106,7 +132,8 @@ poking around in the code itself.
     is the same as ``httpserver`` only with SSL encryption.
 
 ``smtpserver``
-    provides a threaded instance of ``smtpd.SMTPServer`` runnning on localhost.
+    provides a threaded SMTP server, with an API similar to ``smtpd.SMTPServer``,
+    (the deprecated class from the Python standard library) running on localhost.
     It has the following attributes:
 
     * ``addr`` - server address as tuple (host as str, port as int)
@@ -149,7 +176,7 @@ You can install the plugin by running ::
     pip install pytest-localserver
 
 Alternatively, get the latest stable version from `PyPI`_ or the latest
-`bleeding-edge archive`_ from bitbucket.org.
+`bleeding-edge`_ from Github.
 
 License and Credits
 ===================
@@ -157,12 +184,12 @@ License and Credits
 This plugin is released under the MIT license. You can find the full text of
 the license in the LICENSE file.
 
-Copyright (C) 2010-2013 Sebastian Rahlf and others (see AUTHORS).
+Copyright (C) 2010-2022 Sebastian Rahlf and others (see AUTHORS).
 
 Some parts of this package is based on ideas or code from other people:
 
 - I borrowed some implementation ideas for the httpserver from `linkchecker`_.
-- The implementation for the SMTP server is based on the `Mailsink recipe`_ by 
+- The implementation for the SMTP server is based on the `Mailsink recipe`_ by
   Adam Feuer, Matt Branthwaite and Troy Frever.
 - The HTTPS implementation is based on work by `Sebastien Martini`_.
 
@@ -174,12 +201,11 @@ Development and future plans
 Feel free to clone the repository and add your own changes. Pull requests are
 always welcome!::
 
-    hg clone https://bitbucket.org/pytest-dev/pytest-localserver
+    git clone https://github.com/pytest-dev/pytest-localserver
 
 If you find any bugs, please file a `report`_.
 
-Test can be run with tox. Note that you need virtualenv<1.8 to run tests for
-Python 2.4.
+Test can be run with tox.
 
 I already have a couple of ideas for future versions:
 
@@ -187,11 +213,38 @@ I already have a couple of ideas for future versions:
 * making the SMTP outbox as convenient to use as ``django.core.mail.outbox``
 * add your own here!
 
+Preparing a release
+-------------------
+
+For package maintainers, here is how we release a new version:
+
+#. Ensure that the ``CHANGES`` file is up to date with the latest changes.
+#. Make sure that all tests pass on the version you want to release.
+#. Use the `new release form on Github`_ (or some other equivalent method) to
+   create a new release, following the pattern of previous releases.
+
+   * Each release has to be based on a tag. You can either create the tag first
+     (e.g. using ``git tag``) and then make a release from that tag, or you can
+     have Github create the tag as part of the process of making a release;
+     either way works.
+   * The tag name **must** be the `PEP 440`_-compliant version number prefixed
+     by ``v``, making sure to include at least three version number components
+     (e.g. ``v0.6.0``).
+   * The "Auto-generate release notes" button will be useful in summarizing
+     the changes since the last release.
+
+#. Using either the `release workflows page`_ or the link in the email you
+   received about a "Deployment review", go to the workflow run created for
+   the new release and click "Review deployments", then either approve or reject
+   the two deployments, one to Test PyPI and one to real PyPI. (It should not be
+   necessary to reject a deployment unless something really weird happens.)
+   Once the deployment is approved, Github will automatically upload the files.
+
 ----
 
 .. [1] The idea for this project was born when I needed to check that `a piece
        of software`_ behaved itself when receiving HTTP error codes 404 and 500.
-       Having unsuccessfully tried to mock a server, I stumbled across 
+       Having unsuccessfully tried to mock a server, I stumbled across
        `linkchecker`_ which uses a the same idea to test its internals.
 
 .. _monkeypatching: http://pytest.org/latest/monkeypatch.html
@@ -200,9 +253,14 @@ I already have a couple of ideas for future versions:
 .. _linkchecker: http://linkchecker.sourceforge.net/
 .. _WSGI application: http://www.python.org/dev/peps/pep-0333/
 .. _PyPI: http://pypi.python.org/pypi/pytest-localserver/
-.. _bleeding-edge archive: https://bitbucket.org/pytest-dev/pytest-localserver/get/tip.tar.gz
-.. _report: https://bitbucket.org/pytest-dev/pytest-localserver/issues/
+.. _bleeding-edge: https://github.com/pytest-dev/pytest-localserver
+.. _report: https://github.com/pytest-dev/pytest-localserver/issues/
 .. _tox: http://testrun.org/tox/
 .. _a piece of software: http://pypi.python.org/pypi/python-amazon-product-api/
 .. _Mailsink recipe: http://code.activestate.com/recipes/440690/
 .. _Sebastien Martini: http://code.activestate.com/recipes/442473/
+.. _PEP 440: https://peps.python.org/pep-0440/
+.. _build: https://pypa-build.readthedocs.io/en/latest/
+.. _twine: https://twine.readthedocs.io/en/stable/
+.. _new release form on Github: https://github.com/pytest-dev/pytest-localserver/releases/new
+.. _release workflows page: https://github.com/pytest-dev/pytest-localserver/actions/workflows/release.yml

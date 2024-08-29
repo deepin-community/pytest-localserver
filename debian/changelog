@@ -1,3 +1,47 @@
+pytest-localserver (0.8.1-2) unstable; urgency=medium
+
+  * QA upload.
+  * remove obsolete python3-six build dependency
+  * fix project homepage
+
+ -- Alexandre Detiste <tchet@debian.org>  Sat, 24 Feb 2024 14:22:05 +0100
+
+pytest-localserver (0.8.1-1) unstable; urgency=medium
+
+  * QA upload.
+  * New upstream version. Closes: #1056449, #1058352, #1040093, #1040120.
+  * Fix installation of README.
+  * Bump standards version.
+
+ -- Matthias Klose <doko@debian.org>  Sun, 14 Jan 2024 08:54:49 +0100
+
+pytest-localserver (0.5.0-4) unstable; urgency=medium
+
+  * QA upload.
+
+  [ Debian Janitor ]
+  * Bump debhelper from old 12 to 13.
+  * Update standards version to 4.6.0, no changes needed.
+  * Update standards version to 4.6.1, no changes needed.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Thu, 01 Dec 2022 09:06:01 +0000
+
+pytest-localserver (0.5.0-3) unstable; urgency=medium
+
+  * QA upload.
+
+  [ Ondřej Nový ]
+  * Use debhelper-compat instead of debian/compat.
+  * Bump Standards-Version to 4.4.1.
+  * d/control: Update Vcs-* fields with new Debian Python Team Salsa
+    layout.
+
+  [ Debian Janitor ]
+  * Bump debhelper from old 9 to 12.
+  * Update standards version to 4.5.0, no changes needed.
+
+ -- Jelmer Vernooĳ <jelmer@debian.org>  Wed, 03 Feb 2021 04:16:48 +0000
+
 pytest-localserver (0.5.0-2) unstable; urgency=medium
 
   * QA upload.
